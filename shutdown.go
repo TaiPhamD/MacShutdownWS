@@ -57,9 +57,10 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if pass != Mypassword {
 		return
 	}
-	//shutdown := syscall.Command("sudo shutdown -h now")
-	//exec.Command("sudo shutdown -h now", "", "")
-	err := syscall.Exec("/sbin/shutdown", []string{"shutdown", "-h", "now"}, os.Environ())
+
+	//exec.Command("/bin/sh", "-c", "sudo shutdown -h now")
+	//err := syscall.Exec("/sbin/shutdown", []string{"shutdown", "-h", "now"}, os.Environ())
+	err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "shutdown", "-h", "now"}, os.Environ())
 	if err != nil {
 		fmt.Println(err)
 		fmt.Fprintf(w, "Unable to shutdown %s\n", r.URL.Path)
