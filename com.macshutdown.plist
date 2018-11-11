@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>PATH</key>
+      <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:</string>
+    </dict>
+    <key>Label</key>
+    <string>com.startup</string>
+    <key>Program</key>
+    <string>/Users/rush/MacShutdown/MacShutdown</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <false/>
+    <key>LaunchOnlyOnce</key>        
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/Mac_shutdown.stdout</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/Mac_shutdown.stderr</string>
+    <key>UserName</key>
+    <string>rush</string>
+    <key>GroupName</key>
+    <string>admin</string>
+    <key>InitGroups</key>
+    <true/>
+  </dict>
+</plist>
