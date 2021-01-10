@@ -1,0 +1,8 @@
+[Unit]
+Description=restart
+DefaultDependencies=no
+RemainAfterExit=true
+
+[Service]
+ExecStart=/sbin/reboot
+Type=oneshot

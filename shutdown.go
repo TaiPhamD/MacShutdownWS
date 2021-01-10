@@ -143,7 +143,8 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var effectiveMode = *(jsonAuth.Mode)
 	if effectiveMode == 0 {
-		err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "shutdown", "-h", "now"}, os.Environ())
+		//err := syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+		err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_shutdown.service"}, os.Environ())
 		if err != nil {
 			log.Print("Failed to initiate shutdown:", err)
 		}
@@ -166,15 +167,19 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if strings.ToUpper(s.OS) == strings.ToUpper(*(jsonAuth.Ingredient)) {
 				var nextBoot = strconv.FormatUint(uint64(s.BootID), 10)
 				log.Print("attempting to execute restart api and setting bootnext:" + nextBoot)
-				err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "efibootmgr", "-n", nextBoot}, os.Environ())
-				//err := syscall.Exec("/bin/efibootmgr", []string{"-o", nextBoot}, os.Environ())
+				//err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "efibootmgr", "-n", nextBoot}, os.Environ())
+
+				err := syscall.Exec("/bin/efibootmgr", []string{"-o", nextBoot,
+					"&&", "reboot"}, os.Environ())
+				log.Print(err)
 				if err != nil {
 					log.Print("Unable to change uefi nextboot")
 				}
+
 				//RestartFunc.Call(uintptr(unsafe.Pointer(&bootMode)))
 				log.Print("sucessfully executed restart api and setting bootnext:" + nextBoot)
-				err = syscall.Exec("/usr/bin/sudo", []string{"reboot"}, os.Environ())
-				//err = syscall.Exec("/sbin/reboot", []string{""}, os.Environ())
+				//err = syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+				err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_reboot.service"}, os.Environ())
 				if err != nil {
 					log.Print("Unable to restart")
 				}

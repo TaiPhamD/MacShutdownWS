@@ -5,6 +5,8 @@ Documentation=https://github.com/TaiPhamD/NixShutdownWS
 [Service]
 Type=simple
 ExecStart=/opt/shutdown/NixShutdownWS
+ExecStop=/sbin/reboot
+WorkingDirectory=/opt/shutdown/
 StandardOutput=null
 Restart=on-failure
 
