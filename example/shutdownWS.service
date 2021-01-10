@@ -1,0 +1,13 @@
+[Unit]
+Description=Shutdown web service
+Documentation=https://github.com/TaiPhamD/NixShutdownWS
+
+[Service]
+Type=simple
+ExecStart=/opt/shutdown/NixShutdownWS
+StandardOutput=null
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=shutdownWS.service
