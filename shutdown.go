@@ -152,8 +152,9 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Print("Failed to initiate shutdown:", err)
 		}
 		log.Print("sucessfully executed shutdown api!")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("successful shutdown"))
+		w.Write([]byte(`{"msg": "shutdown"}`))
 		return
 	} else {
 
@@ -188,8 +189,9 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				log.Print("sucessfully executed setting bootnext:" + nextBoot)
 				//err = syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
 				//err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_reboot.service"}, os.Environ())
+				w.Header().Set("Content-Type", "application/json; charset=utf-8")
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("restarting"))
+				w.Write([]byte(`{"msg": "rebooting"}`))
 				cmd = exec.Command("reboot")
 				err = cmd.Run()
 				if err != nil {
