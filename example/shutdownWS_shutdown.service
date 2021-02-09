@@ -6,3 +6,7 @@ RemainAfterExit=true
 [Service]
 ExecStart=/sbin/shutdown -h now
 Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+Alias=shutdownWS_shutdown.service

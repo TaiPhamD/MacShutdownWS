@@ -112,10 +112,11 @@ func (p *program) run() {
 	json.Unmarshal(byteValue, &myConfig)
 
 	//log.Print("My password is:", Mypassword)
-
-	log.Print("Using cert at : " + rootDir + "/cert.pem")
+	var certPath = os.Getenv("WS_PUB_FILE")
+	var keyPath = os.Getenv("WS_PRIV_FILE")
+	log.Print("Using cert at : " + certPath)
 	log.Print("Hosting service on port: " + myConfig.Port)
-	err = http.ListenAndServeTLS(":"+myConfig.Port, rootDir+"/cert.pem", rootDir+"/key.pem", shutdownHandler{})
+	err = http.ListenAndServeTLS(":"+myConfig.Port, certPath, keyPath, shutdownHandler{})
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -149,6 +150,8 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Print("Failed to initiate shutdown:", err)
 		}
 		log.Print("sucessfully executed shutdown api!")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("successful shutdown"))
 		return
 	} else {
 
@@ -168,7 +171,6 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				var nextBoot = strconv.FormatUint(uint64(s.BootID), 10)
 				log.Print("attempting to execute restart api and setting bootnext:" + nextBoot)
 				//err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "efibootmgr", "-n", nextBoot}, os.Environ())
-
 				err := syscall.Exec("/bin/efibootmgr", []string{"-o", nextBoot,
 					"&&", "reboot"}, os.Environ())
 				log.Print(err)
@@ -183,7 +185,9 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Print("Unable to restart")
 				}
-				return
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("successful restart"))
+				//return
 			}
 		}
 

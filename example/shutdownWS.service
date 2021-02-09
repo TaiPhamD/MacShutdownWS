@@ -3,9 +3,11 @@ Description=Shutdown web service
 Documentation=https://github.com/TaiPhamD/NixShutdownWS
 
 [Service]
+Environment=WS_PUB_FILE=/etc/letsencrypt/live/xxxx.mooo.com/fullchain.pem
+Environment=WS_PRIV_FILE=/etc/letsencrypt/live/xxxx.mooo.com/privkey.pem
 Type=simple
 ExecStart=/opt/shutdown/NixShutdownWS
-ExecStop=/sbin/reboot
+#ExecStop=/sbin/reboot
 WorkingDirectory=/opt/shutdown/
 StandardOutput=null
 Restart=on-failure
