@@ -6,10 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
 
 	//"unsafe"
 
@@ -145,7 +145,9 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var effectiveMode = *(jsonAuth.Mode)
 	if effectiveMode == 0 {
 		//err := syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
-		err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_shutdown.service"}, os.Environ())
+		//err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_shutdown.service"}, os.Environ())
+		cmd := exec.Command("/sbin/shutdown", "-h", "now")
+		err = cmd.Run()
 		if err != nil {
 			log.Print("Failed to initiate shutdown:", err)
 		}
@@ -171,23 +173,30 @@ func (h shutdownHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				var nextBoot = strconv.FormatUint(uint64(s.BootID), 10)
 				log.Print("attempting to execute restart api and setting bootnext:" + nextBoot)
 				//err := syscall.Exec("/usr/bin/sudo", []string{"sudo", "efibootmgr", "-n", nextBoot}, os.Environ())
-				err := syscall.Exec("/bin/efibootmgr", []string{"-o", nextBoot,
-					"&&", "reboot"}, os.Environ())
+
+				//err := syscall.Exec("/bin/efibootmgr", []string{"-o", nextBoot,
+				//	"&&", "reboot"}, os.Environ())
+				cmd := exec.Command("/bin/efibootmgr", "-o", nextBoot)
+				err = cmd.Run()
+
 				log.Print(err)
 				if err != nil {
 					log.Print("Unable to change uefi nextboot")
 				}
 
 				//RestartFunc.Call(uintptr(unsafe.Pointer(&bootMode)))
-				log.Print("sucessfully executed restart api and setting bootnext:" + nextBoot)
+				log.Print("sucessfully executed setting bootnext:" + nextBoot)
 				//err = syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
-				err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_reboot.service"}, os.Environ())
+				//err = syscall.Exec("/bin/systemctl", []string{"start", "shutdownWS_reboot.service"}, os.Environ())
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("restarting"))
+				cmd = exec.Command("reboot")
+				err = cmd.Run()
 				if err != nil {
 					log.Print("Unable to restart")
 				}
-				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("successful restart"))
-				//return
+
+				return
 			}
 		}
 
